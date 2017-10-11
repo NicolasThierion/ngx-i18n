@@ -1,0 +1,63 @@
+{
+  "name": "ngx-extract-gettext-test",
+  "version": "0.0.1",
+  "description": "A webpack plugin to extract .po files out of HTML/JS sources that uses ngx-translate",
+  "keywords": [
+    "node project",
+    "nodejs project",
+    "node seed",
+    "eslint",
+    "mocha",
+    "istanbul",
+    "code coverage",
+    "gulp",
+    "pre-commit",
+    "es6",
+    "typescript"
+  ],
+  "main": "",
+  "scripts": {
+    "pre-commit": "./node_modules/.bin/gulp pre-commit"
+  },
+  "pre-commit": [
+    "pre-commit"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hwndept/node-seed.git"
+  },
+  "author": "Nikolay Shatalov <hwndept@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hwndept/node-seed/issues"
+  },
+  "homepage": "https://github.com/hwndept/node-seed",
+  "devDependencies": {
+    "@types/lodash": "^4.14.77",
+    "@types/node": "^8.0.32",
+    "@types/webpack": "^3.0.13",
+    "@types/yargs": "8.0.0",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^3.0.1",
+    "gulp-help": "^1.6.1",
+    "gulp-istanbul": "^1.0.0",
+    "gulp-jsdoc3": "^0.3.0",
+    "gulp-mocha": "^2.2.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sourcemaps": "^2.6.1",
+    "gulp-typescript": "^3.2.2",
+    "isparta": "^3.0.3",
+    "merge-stream": "^1.0.1",
+    "pre-commit": "^1.1.3",
+    "run-sequence": "^1.2.2",
+    "typescript": "^2.5.3"
+  },
+  "dependencies": {
+    "@biesbjerg/ngx-translate-extract": "^2.3.2",
+    "chalk": "^2.1.0",
+    "fs": "0.0.1-security",
+    "glob": "^7.1.2",
+    "lodash": "^4.17.4"
+  }
+}
