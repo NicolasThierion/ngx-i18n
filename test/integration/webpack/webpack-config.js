@@ -1,13 +1,20 @@
-const GettextExtractPlugin = require('ngx-extract-gettext');
+const TranslatePlugin  = require('ngx-translation-webpack');
 const merge = require('webpack-merge');
 module.exports = function (originalConfig, buildOptions) {
+  const extractor = new TranslatePlugin.Extractor({
+    languages: ['en', 'fr', 'ro'],
+    format: 'po',
+    relativeOutput: true
+  });
+
+  const injector = new TranslatePlugin.Injector({
+    format: 'json'
+  });
+
   return merge.smart(originalConfig, {
     plugins: [
-      new GettextExtractPlugin.extract.Html({
-        languages: ['en', 'fr', 'ro'],
-        format: 'json',
-        relativeOutput: true
-      })
+      extractor.html,
+      injector
     ]
   });
 };

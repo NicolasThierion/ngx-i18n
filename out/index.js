@@ -1,1 +1,1 @@
-module.exports = require('./dist/webpack/gettext-extract-plugin').GettextExtractPlugin; // default export
+module.exports = require('./dist/webpack/ngx-translation-webpack').TranslatePlugin; // default export

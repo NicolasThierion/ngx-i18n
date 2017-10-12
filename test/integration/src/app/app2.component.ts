@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import i18n from './i18n';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
+  selector: 'app2-root',
+  templateUrl: './app2.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+
+
+export class App2Component {
   title = 'app';
 
   constructor(private translate: TranslateService) {

@@ -10,6 +10,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslatePoHttpLoader } from '@biesbjerg/ngx-translate-po-http-loader';
 import { Http } from '@angular/http';
+import { App2Component } from './app2.component';
 
 
 export class MissingTranslationLogger {
@@ -20,7 +21,7 @@ export class MissingTranslationLogger {
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent, App2Component
   ],
   imports: [
     BrowserModule,
