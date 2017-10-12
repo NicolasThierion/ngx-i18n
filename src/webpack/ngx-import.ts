@@ -1,3 +1,5 @@
+// patch ngx-translate-extract's index.ts to exclude cli, that will complain if no arg is passed to command line.
+
 export * from '@biesbjerg/ngx-translate-extract/dist/utils/translation.collection';
 export * from '@biesbjerg/ngx-translate-extract/dist/utils/utils';
 export * from '@biesbjerg/ngx-translate-extract/dist/cli/tasks/task.interface';
