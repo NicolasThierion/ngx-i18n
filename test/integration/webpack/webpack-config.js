@@ -8,7 +8,8 @@ module.exports = function (originalConfig, buildOptions) {
   });
 
   const injector = new TranslatePlugin.Injector({
-    format: 'json'
+    format: 'json',
+    output: []
   });
 
   return merge.smart(originalConfig, {

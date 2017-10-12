@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import i18n from './i18n';
+
 
 @Component({
   selector: 'app-root',

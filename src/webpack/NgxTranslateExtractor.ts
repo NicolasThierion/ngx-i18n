@@ -41,7 +41,7 @@ export class NgxTranslateExtractor {
     }
   }
 
-  public execute() {
+  public execute(filename?: string[]) {
     const o = this._options as any;
 
     const compiler: CompilerInterface = CompilerFactory.create(o.format == 'po' ? 'pot' : o.format, {});

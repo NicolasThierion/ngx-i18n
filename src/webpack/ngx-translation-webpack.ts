@@ -52,15 +52,37 @@ export namespace TranslatePlugin {
    * Offers injection of any previously extracted translation.
    */
   export class Injector {
-    merger: NgxTranslateMerger;
-
+    _emit: string[];
+    _merger: NgxTranslateMerger;
     constructor(options?: InjectorOptions) {
-      this.merger = new NgxTranslateMerger(options);
+      options = options || {};
+      this._emit = _.defaults(options.output, ['gen/i18n/[lang].[ext]']);
+      options.output = [];
+      this._merger = new NgxTranslateMerger(options);
+
     }
 
     apply(compiler: Compiler) {
       compiler.plugin('emit', (compilation, callback) => {
-        this.merger.execute();
+        this._merger.execute();
+        const format = this._merger.getFormat();
+        const output = this._merger.translations;
+        Object.keys(output)
+          .forEach(lang => {
+            const translationStr: string = JSON.stringify(output[lang].values);
+
+            this._emit.forEach(emit => {
+              const filename = emit
+                .replace('[lang]', `${lang}`)
+                .replace('[ext]', `${format}`);
+
+              compilation.assets[`${filename}`] = {
+                source: () => translationStr,
+                size: () => translationStr.length
+              }
+            });
+        });
+
         callback();
       });
     }

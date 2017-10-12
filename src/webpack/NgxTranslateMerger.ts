@@ -11,33 +11,39 @@ import { CompilerInterface } from '@biesbjerg/ngx-translate-extract';
 import * as mkdirp from 'mkdirp';
 
 export class NgxTranslateMerger {
-  output: { [key: string]: TranslationCollection; };
+  public translations: { [p: string]: TranslationCollection };
   private _options: NgxTranslateMerger.MergerOptions;
 
   constructor(options: NgxTranslateMerger.MergerOptions = {}) {
-      this._options = _.merge(options, {
+
+    // merge with default options
+    this._options = _.defaults(options, {
       input: ['./src'],
-      patterns: [`**/i18n/*.%lang%.po`, `**/i18n/*.%lang%.json`],
-      output: ['gen/i18n/%lang%.json'],
+      patterns: [`**/i18n/*.[lang].po`, `**/i18n/*.[lang].json`],
+      output: ['gen/i18n/[lang].[ext]'],
       format: 'json'
     });
   }
 
   execute() {
-    const o = this._options as any;
     const translationFiles = this._findTranslationFiles();
     const languagesMap = this._findLanguages(translationFiles);
     Log.debug(`Found languages : ${Object.keys(languagesMap)}`);
 
-    this.output = this._extractTranslationCollections(languagesMap);
-    this._save(this.output );
+    this.translations = this._extractTranslationCollections(languagesMap);
+    this._save(this.translations);
   }
 
-  private _findLanguages(files: string[]): {[key: string]: string[]} {
+  getFormat() {
+    return this._options.format;
+  }
+
+  private _findLanguages(files: string[]): { [key: string]: string[] } {
     const regexes = (this._options as any).patterns
+      .map(s => s.replace('[lang]', '_lang_'))
       .map(globToRegExp)
       .map(r => r.source)
-      .map(s => s.replace('%lang%', '(.*)'));
+      .map(s => s.replace('_lang_', '(.*)'));
 
     // infer available languages from found translation files
     return files.reduce((values, filename) => {
@@ -59,7 +65,7 @@ export class NgxTranslateMerger {
   private _findTranslationFiles() {
     const o = this._options as any;
     const files: string[] = [];
-    const pattern = o.patterns.map(s => s.replace('%lang%', '*'));
+    const pattern = o.patterns.map(s => s.replace('[lang]', '*'));
 
     o.input.forEach(dir => {
       readDir(dir, pattern)
@@ -70,7 +76,7 @@ export class NgxTranslateMerger {
     return files;
   }
 
-  private _extractTranslationCollections(translationFiles: {[key: string]: string[]}): {[key: string]: TranslationCollection} {
+  private _extractTranslationCollections(translationFiles: { [key: string]: string[] }): { [key: string]: TranslationCollection } {
     const compilers = [
       CompilerFactory.create('pot', {}),
       CompilerFactory.create('json', {})
@@ -98,7 +104,9 @@ export class NgxTranslateMerger {
 
     o.output.forEach(output => {
       for (const lang of Object.keys(collections)) {
-        const notmalizedOutput = path.resolve(output.replace('%lang%', lang));
+        const notmalizedOutput = path.resolve(output
+          .replace('[lang]', lang)
+          .replace('[ext]', compiler.extension));
         let dir: string = notmalizedOutput;
         let filename: string = `${lang}.${compiler.extension}`;
         if (!fs.existsSync(notmalizedOutput) || !fs.statSync(notmalizedOutput).isDirectory()) {
@@ -128,9 +136,7 @@ export namespace NgxTranslateMerger {
   export interface MergerOptions {
     input?: string[];
     pattern?: string;
-    inputFormat?: 'json' | 'po';
     output?: string[];
-    outputFormat?: 'json' | 'po';
+    format?: 'json' | 'po';
   }
-
 }
