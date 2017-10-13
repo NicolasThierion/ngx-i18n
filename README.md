@@ -13,7 +13,7 @@ Anyway, feel free to use it or to contribute.
 ## How to use
 1. Install the plugin
     ```sh
-    npm install git+https://git@github.com/nicolasThierion/webpack-gettext-plugin.git
+    npm install git+https://git@github.com/NicolasThierion/webpack-gettext-plugin.git
     ```
 2. Enable the plugin into your webpack config
 webpack.config.js: 

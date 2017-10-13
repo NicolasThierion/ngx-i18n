@@ -20,14 +20,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/nicolasThierion/ngx-translation-webpack.git"
+    "url": "https://github.com/NicolasThierion/ngx-translation-webpack.git"
   },
   "author": "Nicolas THIERION <thierion.nicolas@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/nicolasThierion/ngx-translation-webpack/issues"
+    "url": "https://github.com/NicolasThierion/ngx-translation-webpack/issues"
   },
-  "homepage": "https://github.com/nicolasThierion/ngx-translation-webpack",
+  "homepage": "https://github.com/NicolasThierion/ngx-translation-webpack",
   "devDependencies": {
     "@types/lodash": "^4.14.77",
     "@types/node": "^8.0.32",
