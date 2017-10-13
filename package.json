@@ -20,7 +20,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/NicolasThierion/ngx-translation-webpack.git"
+    "url": "github:NicolasThierion/ngx-translation-webpack#0.1"
   },
   "author": "Nicolas THIERION <thierion.nicolas@gmail.com>",
   "license": "MIT",

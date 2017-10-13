@@ -1,4 +1,4 @@
-# Webpack gettext plugin
+# Webpack gettext plugin <sub>0.0.1</sub>
 
 This project is a webpack plugin to extract translations from html templates.
 It uses [biesbjerg/ngx-translate-extract](https://github.com/biesbjerg/ngx-translate-extract) to parse templates and extract translations
@@ -13,7 +13,7 @@ Anyway, feel free to use it or to contribute.
 ## How to use
 1. Install the plugin
     ```sh
-    npm install git+https://git@github.com/NicolasThierion/webpack-gettext-plugin.git
+    npm install git+https://git@github.com/NicolasThierion/webpack-gettext-plugin.git#0.0.1
     ```
 2. Enable the plugin into your webpack config
 webpack.config.js: 
