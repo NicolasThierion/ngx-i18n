@@ -1,14 +1,13 @@
 import {
-  CompilerInterface,
-  DirectiveParser,
-  ExtractTask, ExtractTaskOptionsInterface,
+  TranslationCollection,
+  DirectiveParser, ExtractTaskOptionsInterface,
   ParserInterface, PipeParser,
   ServiceParser
 } from './ngx-import'
 import * as _ from 'lodash';
 import * as path from 'path';
-import { readDir } from './utils';
-import { CompilerFactory } from './compiler.factory';
+import { readDir, save } from './utils';
+import * as fs from 'fs';
 
 export interface NgxOptions extends ExtractTaskOptionsInterface {
   input?: string[];
@@ -23,7 +22,6 @@ export interface NgxOptions extends ExtractTaskOptionsInterface {
  */
 export class NgxTranslateExtractor {
   _parsers: ParserInterface[];
-  _compiler: CompilerInterface;
   options: NgxOptions;
 
   constructor(options: NgxOptions = {}) {
@@ -44,8 +42,6 @@ export class NgxTranslateExtractor {
       throw new TypeError(`invalid format : ${options.format}. Valid format are json, po`);
     }
 
-    this._compiler = CompilerFactory.create(this.options.format, {});
-
     this._parsers = [
       new PipeParser(),
       new DirectiveParser(),
@@ -56,7 +52,9 @@ export class NgxTranslateExtractor {
   public execute(filenames?: string[]) {
 
     const o = this.options as any;
-    const input = filenames || o.input;
+    const input = filenames ? filenames
+        .map(f => fs.statSync(f).isFile() ? path.dirname(f) : f)
+      : o.input;
 
     // if output specified, run ExtractTask as normal
     if (!this.options.relativeOutput) {
@@ -67,10 +65,9 @@ export class NgxTranslateExtractor {
           outputs.push(path.join(ot, `${lang}.${o.format}`));
         }
       }
-      const extract = new ExtractTask(input, outputs, o);
-      extract.setCompiler(this._compiler);
-      extract.setParsers(this._parsers);
-      extract.execute();
+
+      const collections = this._extract(input, outputs, o);
+      save(collections, o.format, outputs);
     } else {
 
       // list all files found that matches template
@@ -92,13 +89,33 @@ export class NgxTranslateExtractor {
               .map(ot => path.join(dir, ot, `${path.basename(dir)}.${lang}.${o.format}`)))
         }
 
-        const extract = new ExtractTask([dir], outputs, {
+        const collections = this._extract([dir], outputs, {
           patterns: o.patterns.map(p => `/${path.basename(p)}`)
         });
-        extract.setCompiler(this._compiler);
-        extract.setParsers(this._parsers);
-        extract.execute();
+        save(collections, o.format, outputs);
       });
     }
+  }
+
+  /**
+   * Extract strings from input dirs using configured parsers
+   */
+  protected _extract(input: string[], outputs: string[], options: ExtractTaskOptionsInterface): {[lang:string]: TranslationCollection} {
+    let collection: TranslationCollection = new TranslationCollection();
+    input.forEach(dir => {
+      readDir(dir, options.patterns || []).forEach(path => {
+        const contents: string = fs.readFileSync(path, 'utf-8');
+        this._parsers.forEach((parser: ParserInterface) => {
+          collection = collection.union(parser.extract(contents, path));
+        });
+      });
+    });
+
+    const collections = {};
+    (this.options as any).languages.forEach(l => {
+      collections[l] = collection;
+    });
+
+    return collections;
   }
 }

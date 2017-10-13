@@ -1,12 +1,9 @@
 import * as _ from 'lodash';
-import { readDir } from './utils';
+import { readDir, save } from './utils';
 import * as globToRegExp from 'glob-to-regexp'
-import { Log } from './log';
 import { TranslationCollection } from './ngx-import'
 import * as fs from 'fs';
 import * as path from 'path';
-import { CompilerInterface } from '@biesbjerg/ngx-translate-extract';
-import * as mkdirp from 'mkdirp';
 import { CompilerFactory } from './compiler.factory';
 
 export class NgxTranslateMerger {
@@ -25,12 +22,12 @@ export class NgxTranslateMerger {
   }
 
   execute() {
+    const o = this._options as any;
     const translationFiles = this._findTranslationFiles();
     const languagesMap = this._findLanguages(translationFiles);
-    Log.debug(`Found languages : ${Object.keys(languagesMap)}`);
 
     this.translations = this._extractTranslationCollections(languagesMap);
-    this._save(this.translations);
+    save(this.translations, o.format, o.output);
   }
 
   getFormat() {
@@ -95,38 +92,6 @@ export class NgxTranslateMerger {
     }
 
     return collections;
-  }
-
-  private _save(collections: { [p: string]: TranslationCollection }) {
-    const o = this._options as any;
-    const compiler: CompilerInterface = CompilerFactory.create(o.format, {});
-
-    o.output.forEach(output => {
-      for (const lang of Object.keys(collections)) {
-        const notmalizedOutput = path.resolve(output
-          .replace('[lang]', lang)
-          .replace('[ext]', compiler.extension));
-        let dir: string = notmalizedOutput;
-        let filename: string = `${lang}.${compiler.extension}`;
-        if (!fs.existsSync(notmalizedOutput) || !fs.statSync(notmalizedOutput).isDirectory()) {
-          dir = path.dirname(notmalizedOutput);
-          filename = path.basename(notmalizedOutput);
-        }
-
-        const outputPath: string = path.join(dir, filename);
-
-
-        let processedCollection: TranslationCollection = collections[lang];
-        Log.debug(`\nSaving: ${outputPath}`);
-        processedCollection = processedCollection.sort();
-
-        if (!fs.existsSync(dir)) {
-          mkdirp.sync(dir);
-        }
-        fs.writeFileSync(outputPath, compiler.compile(processedCollection));
-      }
-      Log.debug('Done!');
-    });
   }
 }
 

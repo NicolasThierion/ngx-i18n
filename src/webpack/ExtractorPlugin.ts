@@ -33,7 +33,7 @@ export class ExtractorPlugin implements Plugin {
             .reduce((acc, v) => acc || v, false)
         });
 
-      // update change timestamp
+      // update file change timestamp
       this.fileTimestamps = compilation.fileTimestamps;
 
       // trigger new extraction
