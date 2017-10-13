@@ -2,13 +2,12 @@ import * as _ from 'lodash';
 import { readDir } from './utils';
 import * as globToRegExp from 'glob-to-regexp'
 import { Log } from './log';
-import {
-  CompilerFactory, TranslationCollection
-} from './ngx-import'
+import { TranslationCollection } from './ngx-import'
 import * as fs from 'fs';
 import * as path from 'path';
 import { CompilerInterface } from '@biesbjerg/ngx-translate-extract';
 import * as mkdirp from 'mkdirp';
+import { CompilerFactory } from './compiler.factory';
 
 export class NgxTranslateMerger {
   public translations: { [p: string]: TranslationCollection };
@@ -20,7 +19,7 @@ export class NgxTranslateMerger {
     this._options = _.defaults(options, {
       input: ['./src'],
       patterns: [`**/i18n/*.[lang].po`, `**/i18n/*.[lang].json`],
-      output: ['gen/i18n/[lang].[ext]'],
+      output: ['assets/i18n/[lang].[ext]'],
       format: 'json'
     });
   }
@@ -100,7 +99,7 @@ export class NgxTranslateMerger {
 
   private _save(collections: { [p: string]: TranslationCollection }) {
     const o = this._options as any;
-    const compiler: CompilerInterface = CompilerFactory.create(o.format == 'po' ? 'pot' : o.format, {});
+    const compiler: CompilerInterface = CompilerFactory.create(o.format, {});
 
     o.output.forEach(output => {
       for (const lang of Object.keys(collections)) {

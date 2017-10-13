@@ -1,21 +1,17 @@
 {
-  "name": "ngx-extract-gettext-test",
+  "name": "ngx-translation-webpack",
   "version": "0.0.1",
-  "description": "A webpack plugin to extract .po files out of HTML/JS sources that uses ngx-translate",
+  "description": "A webpack plugin to extract translations into .json & .po files out of HTML/JS sources, using ngx-translate. The extracted translations can be eddited, and then injected back into the bundle.",
   "keywords": [
-    "node project",
-    "nodejs project",
-    "node seed",
-    "eslint",
-    "mocha",
-    "istanbul",
-    "code coverage",
-    "gulp",
-    "pre-commit",
-    "es6",
-    "typescript"
+    "webpack",
+    "ngx-translate",
+    "translation",
+    "json",
+    "watch",
+    "gettext",
+    "po"
   ],
-  "main": "",
+  "main": "index.js",
   "scripts": {
     "pre-commit": "./node_modules/.bin/gulp pre-commit"
   },
@@ -24,14 +20,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/hwndept/node-seed.git"
+    "url": "https://github.com/nicolasThierion/ngx-translation-webpack.git"
   },
-  "author": "Nikolay Shatalov <hwndept@gmail.com>",
+  "author": "Nicolas THIERION <thierion.nicolas@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/hwndept/node-seed/issues"
+    "url": "https://github.com/nicolasThierion/ngx-translation-webpack/issues"
   },
-  "homepage": "https://github.com/hwndept/node-seed",
+  "homepage": "https://github.com/nicolasThierion/ngx-translation-webpack",
   "devDependencies": {
     "@types/lodash": "^4.14.77",
     "@types/node": "^8.0.32",

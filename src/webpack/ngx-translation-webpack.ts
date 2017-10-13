@@ -1,16 +1,17 @@
-import { Log } from './log';
 import { Compiler, Plugin } from 'webpack';
 import { NgxTranslateExtractor } from './NgxTranslateExtractor';
 import * as _ from 'lodash';
 import { NgxTranslateMerger } from './NgxTranslateMerger';
+import { ExtractorPlugin } from './ExtractorPlugin';
 
 export namespace TranslatePlugin {
+
   export interface ExtractorOptions {
-    input?: string[];
-    output?: string[];
-    format?: 'json' | 'po',
-    relativeOutput?: boolean;
-    languages?: string[];
+    input?: string[];         // path to search for translations to extract
+    output?: string[];        // where to store translations files
+    format?: 'json' | 'po',   // output format
+    relativeOutput?: boolean; // if set to true, output relative to files where translations have been extracted
+    languages?: string[];     // for which languages should generate files ?
   }
 
   export interface InjectorOptions extends NgxTranslateMerger.MergerOptions {}
@@ -23,19 +24,9 @@ export namespace TranslatePlugin {
     public js: Plugin;
 
     constructor(options: ExtractorOptions = {}) {
-      const patterns = ['/**/*.html'];
-      const htmlExtractor = new NgxTranslateExtractor(_.merge(options, {
-        patterns
-      }));
-      Log.debug(`extraction of translations from ${patterns}`);
-
-      this.html = {
-        apply: (compiler: Compiler) => {
-          compiler.plugin('compile', compilation => {
-            htmlExtractor.execute();
-          });
-        }
-      };
+      this.html = new ExtractorPlugin(new NgxTranslateExtractor(_.merge(options, {
+        patterns: ['/**/*.html']
+      })));
 
       this.js = {
         apply: (compiler: Compiler) => {
@@ -56,10 +47,11 @@ export namespace TranslatePlugin {
     _merger: NgxTranslateMerger;
     constructor(options?: InjectorOptions) {
       options = options || {};
-      this._emit = _.defaults(options.output, ['gen/i18n/[lang].[ext]']);
+
+      // void output, and rather emit to webpack bundle
+      this._emit = _.defaults(options.output, ['assets/i18n/[lang].[ext]']);
       options.output = [];
       this._merger = new NgxTranslateMerger(options);
-
     }
 
     apply(compiler: Compiler) {
@@ -71,6 +63,7 @@ export namespace TranslatePlugin {
           .forEach(lang => {
             const translationStr: string = JSON.stringify(output[lang].values);
 
+            // emit translation files to bundle
             this._emit.forEach(emit => {
               const filename = emit
                 .replace('[lang]', `${lang}`)

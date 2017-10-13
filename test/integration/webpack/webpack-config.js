@@ -8,14 +8,14 @@ module.exports = function (originalConfig, buildOptions) {
   });
 
   const injector = new TranslatePlugin.Injector({
-    format: 'json',
-    output: []
+    format: 'json',         // inject translations as json
+    output: []              // no output, only inject into the bundle
   });
 
   return merge.smart(originalConfig, {
     plugins: [
-      extractor.html,
-      injector
+      extractor.html,       // plug in html extractor
+      injector              // plug in translation injector
     ]
   });
 };
