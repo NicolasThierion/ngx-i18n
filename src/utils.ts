@@ -16,33 +16,44 @@ export function readDir(dir: string, patterns: string[]): string[] {
   }, []);
 }
 
-export function save(collections: { [p: string]: TranslationCollection }, format: string, output: string[]) {
+export function save(collection: TranslationCollection, lang: string, format: string, output: string[]) {
   const compiler: CompilerInterface = CompilerFactory.create(format, {});
 
   output.forEach(output => {
-    for (const lang of Object.keys(collections)) {
-      const notmalizedOutput = path.resolve(output
-        .replace('[lang]', lang)
-        .replace('[ext]', compiler.extension));
-      let dir: string = notmalizedOutput;
-      let filename: string = `${lang}.${compiler.extension}`;
-      if (!fs.existsSync(notmalizedOutput) || !fs.statSync(notmalizedOutput).isDirectory()) {
-        dir = path.dirname(notmalizedOutput);
-        filename = path.basename(notmalizedOutput);
+    const normalizedOutput = normalizePath(output, compiler.extension, lang);
+    let dir: string = normalizedOutput;
+    let filename: string = `${lang}.${compiler.extension}`;
+    if (!fs.existsSync(normalizedOutput) || !fs.statSync(normalizedOutput).isDirectory()) {
+      dir = path.dirname(normalizedOutput);
+      filename = path.basename(normalizedOutput);
+    }
+
+    const outputPath: string = path.join(dir, filename);
+    collection = collection.sort();
+
+    if (collection.count() > 0) {
+      if (!fs.existsSync(dir)) {
+        mkdirp.sync(dir);
       }
-
-      const outputPath: string = path.join(dir, filename);
-
-
-      let processedCollection: TranslationCollection = collections[lang];
-      processedCollection = processedCollection.sort();
-
-      if (processedCollection.count() > 0) {
-        if (!fs.existsSync(dir)) {
-          mkdirp.sync(dir);
-        }
-        fs.writeFileSync(outputPath, compiler.compile(processedCollection));
-      }
+      fs.writeFileSync(outputPath, compiler.compile(collection));
     }
   });
+}
+
+export function normalizePath(output: string, extension: string, lang: string) {
+  return path.resolve(output
+    .replace('[lang]', lang)
+    .replace('[ext]', extension));
+}
+
+export function merge(paths: string[], compiler: CompilerInterface,
+                      collection = new TranslationCollection()): TranslationCollection {
+  return paths
+    .filter(p => path.extname(p) === `.${compiler.extension}`)
+    .filter(p => fs.existsSync(p))
+    .map(p => fs.readFileSync(p, 'utf-8'))
+    .map(compiler.parse.bind(compiler))
+    .reduce((acc: TranslationCollection, c: TranslationCollection) => {
+      return acc.union(c);
+    }, collection) as TranslationCollection;
 }

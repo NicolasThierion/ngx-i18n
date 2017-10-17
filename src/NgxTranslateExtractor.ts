@@ -6,9 +6,11 @@ import {
 } from './biesbjerg-ngx-translate-extract'
 import * as _ from 'lodash';
 import * as path from 'path';
-import { readDir, save } from './utils';
+import { merge, normalizePath, readDir, save } from './utils';
 import * as fs from 'fs';
 import { I18nParser } from './parsers/I18nParser';
+import { CompilerInterface } from '@biesbjerg/ngx-translate-extract';
+import { CompilerFactory } from './compiler.factory';
 
 export interface NgxOptions extends ExtractTaskOptionsInterface {
   input?: string[];
@@ -23,6 +25,7 @@ export interface NgxOptions extends ExtractTaskOptionsInterface {
  */
 export class NgxTranslateExtractor {
   _parsers: ParserInterface[];
+  _compiler: CompilerInterface;
   options: NgxOptions;
 
   constructor(options: NgxOptions = {}) {
@@ -49,6 +52,8 @@ export class NgxTranslateExtractor {
       new ServiceParser(),
       // new I18nParser()
     ];
+
+    this._compiler = CompilerFactory.create(this.options.format, {})
   }
 
   public execute(filenames?: string[]) {
@@ -61,15 +66,8 @@ export class NgxTranslateExtractor {
     // if output specified, run ExtractTask as normal
     if (!this.options.relativeOutput) {
       // ngx-translate-extract --input  `input` --output `output` --clean --sort --format namespaced-json
-      let outputs: string[] = [];
-      for (const lang of o.languages) {
-        for (const ot of o.output) {
-          outputs.push(path.join(ot, `${lang}.${o.format}`));
-        }
-      }
-
-      const collections = this._extract(input, outputs, o);
-      save(collections, o.format, outputs);
+      let collections = this._extract(input, o);
+      this._save(collections, o.output.map(ot => path.join(ot, `[lang].[ext]`)));
     } else {
 
       // list all files found that matches template
@@ -84,17 +82,10 @@ export class NgxTranslateExtractor {
 
       // run one extractTask per folder where template is found
       dirs.forEach(dir => {
-        let outputs = [];
-        for (const lang of o.languages) {
-          outputs = outputs.concat(
-            o.output
-              .map(ot => path.join(dir, ot, `${path.basename(dir)}.${lang}.${o.format}`)))
-        }
-
-        const collections = this._extract([dir], outputs, {
+        let collections = this._extract([dir], {
           patterns: o.patterns.map(p => `/${path.basename(p)}`)
         });
-        save(collections, o.format, outputs);
+       this._save(collections, o.output.map(ot => path.join(dir, ot, `${path.basename(dir)}.[lang].[ext]`)));
       });
     }
   }
@@ -102,7 +93,7 @@ export class NgxTranslateExtractor {
   /**
    * Extract strings from input dirs using configured parsers
    */
-  protected _extract(input: string[], outputs: string[], options: ExtractTaskOptionsInterface): {[lang:string]: TranslationCollection} {
+  protected _extract(input: string[], options: ExtractTaskOptionsInterface): {[lang:string]: TranslationCollection} {
     let collection: TranslationCollection = new TranslationCollection();
     input.forEach(dir => {
       readDir(dir, options.patterns || []).forEach(path => {
@@ -119,5 +110,14 @@ export class NgxTranslateExtractor {
     });
 
     return collections;
+  }
+
+  private _save(collections: {[lang: string]: TranslationCollection}, outputs: string[]): any {
+
+    for (const lang of Object.keys(collections)) {
+      const normalizedOutputs = outputs.map(p => normalizePath(p, this._compiler.extension, lang));
+      collections[lang] = merge(normalizedOutputs, this._compiler, collections[lang]);
+      save(collections[lang], lang, (this.options as any).format, normalizedOutputs);
+    }
   }
 }

@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import { readDir, save } from './utils';
+import { merge, readDir, save } from './utils';
 import * as globToRegExp from 'glob-to-regexp'
 import { TranslationCollection } from './biesbjerg-ngx-translate-extract'
 import * as fs from 'fs';
@@ -27,7 +27,9 @@ export class NgxTranslateMerger {
     const languagesMap = this._findLanguages(translationFiles);
 
     this.translations = this._extractTranslationCollections(languagesMap);
-    save(this.translations, o.format, o.output);
+    for (const lang of Object.keys(this.translations)) {
+      save(this.translations[lang], lang, o.format, o.output);
+    }
   }
 
   getFormat() {
@@ -80,14 +82,9 @@ export class NgxTranslateMerger {
     const collections = {};
     for (const lang of Object.keys(translationFiles)) {
       const paths = translationFiles[lang];
-      collections[lang] = new TranslationCollection();
-      for (const compiler of compilers) {
 
-        collections[lang] = paths
-          .filter(p => path.extname(p) === `.${compiler.extension}`)
-          .map(p => fs.readFileSync(p, 'utf-8'))
-          .map(compiler.parse.bind(compiler))
-          .reduce((acc: TranslationCollection, c: TranslationCollection) => acc.union(c), collections[lang]);
+      for (const compiler of compilers) {
+        collections[lang] = merge(paths, compiler)
       }
     }
 
