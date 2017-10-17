@@ -51,7 +51,9 @@
   },
   "dependencies": {
     "@biesbjerg/ngx-translate-extract": "^2.3.2",
+    "@types/cheerio": "^0.22.3",
     "chalk": "^2.1.0",
+    "cheerio": "^1.0.0-rc.2",
     "fs": "0.0.1-security",
     "glob": "^7.1.2",
     "glob-to-regexp": "^0.3.0",

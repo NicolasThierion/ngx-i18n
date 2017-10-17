@@ -1,9 +1,11 @@
 import * as globToRegExp from 'glob-to-regexp'
 import { Compiler, Plugin } from 'webpack';
-import { NgxTranslateExtractor } from './NgxTranslateExtractor';
-import Watching = Compiler.Watching;
-import { readDir } from './utils';
+import { NgxTranslateExtractor } from '../NgxTranslateExtractor';
+import { readDir } from '../utils';
 
+/**
+ * Webpack plugin that extracts translation from any file, using NgxTranslateExtractor.
+ */
 export class ExtractorPlugin implements Plugin {
   private extractor: NgxTranslateExtractor;
   private compiled: boolean;

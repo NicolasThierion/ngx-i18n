@@ -1,5 +1,8 @@
-import { CompilerFactory as NgxCompilerFactory, CompilerInterface } from './ngx-import';
+import { CompilerFactory as NgxCompilerFactory, CompilerInterface } from './biesbjerg-ngx-translate-extract';
 
+/**
+ * Overrides default CompilerFactory to take 'po' format for gettext instead of 'pot'
+ */
 export class CompilerFactory extends NgxCompilerFactory {
   static create(format: string, options?: {}): CompilerInterface {
     // NgxCompilerFactory accepts 'pot' format rather than 'po'

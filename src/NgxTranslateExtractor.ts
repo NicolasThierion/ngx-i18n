@@ -3,11 +3,12 @@ import {
   DirectiveParser, ExtractTaskOptionsInterface,
   ParserInterface, PipeParser,
   ServiceParser
-} from './ngx-import'
+} from './biesbjerg-ngx-translate-extract'
 import * as _ from 'lodash';
 import * as path from 'path';
 import { readDir, save } from './utils';
 import * as fs from 'fs';
+import { I18nParser } from './parsers/I18nParser';
 
 export interface NgxOptions extends ExtractTaskOptionsInterface {
   input?: string[];
@@ -45,7 +46,8 @@ export class NgxTranslateExtractor {
     this._parsers = [
       new PipeParser(),
       new DirectiveParser(),
-      new ServiceParser()
+      new ServiceParser(),
+      // new I18nParser()
     ];
   }
 

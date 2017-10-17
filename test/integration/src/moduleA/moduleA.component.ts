@@ -3,13 +3,10 @@ import { TranslateService } from '@ngx-translate/core';
 
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  selector: 'module-a',
+  templateUrl: './moduleA.component.html'
 })
-export class AppComponent {
-  title = 'app';
-
+export class ModuleAComponent {
   constructor(private translate: TranslateService) {
     translate.setDefaultLang('en');
   }

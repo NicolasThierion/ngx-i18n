@@ -1,9 +1,13 @@
 import { Compiler, Plugin } from 'webpack';
-import { NgxTranslateExtractor } from './NgxTranslateExtractor';
+import { NgxTranslateExtractor } from '../NgxTranslateExtractor';
 import * as _ from 'lodash';
-import { NgxTranslateMerger } from './NgxTranslateMerger';
+import { NgxTranslateMerger } from '../NgxTranslateMerger';
 import { ExtractorPlugin } from './ExtractorPlugin';
+import { InjectorPlugin } from './InjectorPlugin';
 
+/**
+ *
+ */
 export namespace TranslatePlugin {
 
   export interface ExtractorOptions {
@@ -39,46 +43,7 @@ export namespace TranslatePlugin {
     }
   }
 
-  /**
-   * Offers injection of any previously extracted translation.
-   */
-  export class Injector {
-    _emit: string[];
-    _merger: NgxTranslateMerger;
-    constructor(options?: InjectorOptions) {
-      options = options || {};
+  export const Injector = InjectorPlugin;
 
-      // void output, and rather emit to webpack bundle
-      this._emit = _.defaults(options.output, ['assets/i18n/[lang].[ext]']);
-      options.output = [];
-      this._merger = new NgxTranslateMerger(options);
-    }
-
-    apply(compiler: Compiler) {
-      compiler.plugin('emit', (compilation, callback) => {
-        this._merger.execute();
-        const format = this._merger.getFormat();
-        const output = this._merger.translations;
-        Object.keys(output)
-          .forEach(lang => {
-            const translationStr: string = JSON.stringify(output[lang].values);
-
-            // emit translation files to bundle
-            this._emit.forEach(emit => {
-              const filename = emit
-                .replace('[lang]', `${lang}`)
-                .replace('[ext]', `${format}`);
-
-              compilation.assets[`${filename}`] = {
-                source: () => translationStr,
-                size: () => translationStr.length
-              }
-            });
-        });
-
-        callback();
-      });
-    }
-  }
 }
 

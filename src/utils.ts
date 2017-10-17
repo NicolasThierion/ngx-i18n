@@ -2,7 +2,7 @@ import * as mkdirp from 'mkdirp';
 import * as glob from 'glob';
 import * as fs from 'fs';
 import * as path from 'path';
-import { TranslationCollection, CompilerInterface } from './ngx-import';
+import { TranslationCollection, CompilerInterface } from './biesbjerg-ngx-translate-extract';
 import { CompilerFactory } from './compiler.factory';
 
 /**

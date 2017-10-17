@@ -1,7 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import { AppComponent } from './app.component';
 import {
   TranslateModule, TranslateLoader, MissingTranslationHandler,
   MissingTranslationHandlerParams
@@ -10,7 +9,8 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslatePoHttpLoader } from '@biesbjerg/ngx-translate-po-http-loader';
 import { Http } from '@angular/http';
-import { App2Component } from './app2.component';
+import { ModuleB } from './moduleB/moduleB.module';
+import { ModuleAComponent } from './moduleA.component';
 
 
 export class MissingTranslationLogger {
@@ -21,10 +21,10 @@ export class MissingTranslationLogger {
 
 @NgModule({
   declarations: [
-    AppComponent, App2Component
+    ModuleAComponent
   ],
   imports: [
-    BrowserModule,
+    BrowserModule, ModuleB,
     HttpClientModule,
     TranslateModule.forRoot({
       loader: {
@@ -37,9 +37,9 @@ export class MissingTranslationLogger {
     })
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [ModuleAComponent]
 })
-export class AppModule { }
+export class ModuleA { }
 
 
 export function HttpLoaderFactory(http: HttpClient) {
