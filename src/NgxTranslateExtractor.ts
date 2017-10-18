@@ -1,16 +1,16 @@
 import {
-  TranslationCollection,
   DirectiveParser, ExtractTaskOptionsInterface,
   ParserInterface, PipeParser,
   ServiceParser
 } from './biesbjerg-ngx-translate-extract'
 import * as _ from 'lodash';
-import * as path from 'path';
-import { merge, normalizePath, readDir, save } from './utils';
+import * as PATH from 'path';
+import { normalizePath, readDir, save } from './utils';
 import * as fs from 'fs';
 import { I18nParser } from './parsers/I18nParser';
 import { CompilerInterface } from '@biesbjerg/ngx-translate-extract';
 import { CompilerFactory } from './compiler.factory';
+import { ExtendedTranslationCollection } from './ExtendedTranslationCollection ';
 
 export interface NgxOptions extends ExtractTaskOptionsInterface {
   input?: string[];
@@ -50,7 +50,7 @@ export class NgxTranslateExtractor {
       new PipeParser(),
       new DirectiveParser(),
       new ServiceParser(),
-      // new I18nParser()
+      new I18nParser()
     ];
 
     this._compiler = CompilerFactory.create(this.options.format, {})
@@ -60,21 +60,21 @@ export class NgxTranslateExtractor {
 
     const o = this.options as any;
     const input = filenames ? filenames
-        .map(f => fs.statSync(f).isFile() ? path.dirname(f) : f)
+        .map(f => fs.statSync(f).isFile() ? PATH.dirname(f) : f)
       : o.input;
 
     // if output specified, run ExtractTask as normal
     if (!this.options.relativeOutput) {
       // ngx-translate-extract --input  `input` --output `output` --clean --sort --format namespaced-json
       let collections = this._extract(input, o);
-      this._save(collections, o.output.map(ot => path.join(ot, `[lang].[ext]`)));
+      this._save(collections, o.output.map(ot => PATH.join(ot, `[lang].[ext]`)));
     } else {
 
       // list all files found that matches template
       const dirs = new Set<string>();
       input.map(dir => {
         return readDir(dir, o.patterns)
-          .map(path.dirname)
+          .map(PATH.dirname)
           .reduce((dirs: Set<string>, dir: string) => {
             return dirs.add(dir);
           }, dirs);
@@ -83,9 +83,9 @@ export class NgxTranslateExtractor {
       // run one extractTask per folder where template is found
       dirs.forEach(dir => {
         let collections = this._extract([dir], {
-          patterns: o.patterns.map(p => `/${path.basename(p)}`)
+          patterns: o.patterns.map(p => `/${PATH.basename(p)}`)
         });
-       this._save(collections, o.output.map(ot => path.join(dir, ot, `${path.basename(dir)}.[lang].[ext]`)));
+       this._save(collections, o.output.map(ot => PATH.join(dir, ot, `${PATH.basename(dir)}.[lang].[ext]`)));
       });
     }
   }
@@ -93,8 +93,8 @@ export class NgxTranslateExtractor {
   /**
    * Extract strings from input dirs using configured parsers
    */
-  protected _extract(input: string[], options: ExtractTaskOptionsInterface): {[lang:string]: TranslationCollection} {
-    let collection: TranslationCollection = new TranslationCollection();
+  protected _extract(input: string[], options: ExtractTaskOptionsInterface): {[lang:string]: ExtendedTranslationCollection} {
+    let collection = new ExtendedTranslationCollection();
     input.forEach(dir => {
       readDir(dir, options.patterns || []).forEach(path => {
         const contents: string = fs.readFileSync(path, 'utf-8');
@@ -112,12 +112,31 @@ export class NgxTranslateExtractor {
     return collections;
   }
 
-  private _save(collections: {[lang: string]: TranslationCollection}, outputs: string[]): any {
+  private _save(collections: {[lang: string]: ExtendedTranslationCollection}, outputs: string[]): any {
 
     for (const lang of Object.keys(collections)) {
-      const normalizedOutputs = outputs.map(p => normalizePath(p, this._compiler.extension, lang));
-      collections[lang] = merge(normalizedOutputs, this._compiler, collections[lang]);
-      save(collections[lang], lang, (this.options as any).format, normalizedOutputs);
+
+      const normalizedOutputs = outputs.map(ot => normalizePath(ot, this._compiler.extension, lang));
+      normalizedOutputs.forEach(o => {
+        const collection = intersect(o, this._compiler, collections[lang]);
+        save(collection, lang, (this.options as any).format, o);
+      })
     }
   }
 }
+
+function intersect(path: string, compiler: CompilerInterface,
+                   collection = new ExtendedTranslationCollection()): ExtendedTranslationCollection {
+  let res = collection;
+
+  if (PATH.extname(path) !== `.${compiler.extension}`) {
+    return res;
+  }
+  if (!fs.existsSync(path)) {
+    return res;
+  }
+  res = ExtendedTranslationCollection.of(compiler.parse(fs.readFileSync(path, 'utf-8')));
+  res = collection.union(res).intersect(collection);
+  return res;
+}
+

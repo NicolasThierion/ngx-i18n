@@ -1,21 +1,23 @@
-import { ParserInterface, TranslationCollection  } from '../biesbjerg-ngx-translate-extract';
+import { ParserInterface } from '../biesbjerg-ngx-translate-extract';
 import { } from '@biesbjerg/ngx-translate-extract';
 import { AbstractTemplateParser } from './abstract-template.parser';
 
 import * as $ from 'cheerio';
+import { ExtendedTranslationCollection } from '../ExtendedTranslationCollection ';
+import { TranslationMeta } from '../TranslationMeta';
 
 export class I18nParser extends AbstractTemplateParser implements ParserInterface {
 
-  public extract(contents: string, path?: string): TranslationCollection {
+  public extract(contents: string, path?: string): ExtendedTranslationCollection {
     if (path && this._isAngularComponent(path)) {
       contents = this._extractInlineTemplate(contents);
     }
 
-    return this._parseTemplate(contents);
+    return this._parseTemplate(contents, path);
   }
 
-  protected _parseTemplate(template: string): TranslationCollection {
-    let collection: TranslationCollection = new TranslationCollection();
+  protected _parseTemplate(template: string, path?: string): ExtendedTranslationCollection {
+    let collection = new ExtendedTranslationCollection();
 
     template = this._normalizeTemplateAttributes(template);
 
@@ -25,19 +27,26 @@ export class I18nParser extends AbstractTemplateParser implements ParserInterfac
       .addBack(selector)
       .each((i: number, element: CheerioElement) => {
         const $element = $(element);
-        const attr = $element.attr('i18n');
-
-        if (attr) {
-          collection = collection.add(attr);
-        } else {
-          $element
-            .contents()
-            .toArray()
-            .filter(node => node.type === 'text')
-            .map(node => node.nodeValue.trim())
-            .filter(text => text.length > 0)
-            .forEach(text => collection = collection.add(text));
+        let attr = $element.attr('i18n') || '';
+        const pattern = /(?:([^|@]*)\|)?([^|@]*)(?:@@([^|@]*))?/;
+        let meta: TranslationMeta = {};
+        let meaning, description, id;
+        if (pattern.test(attr)) {
+          const matches = (attr.match(pattern) as RegExpMatchArray);
+          [meaning, description, id] = matches.slice(1);
+          meta = {
+            meaning, description
+          }
         }
+        meta.location = path;
+
+        $element
+          .contents()
+          .toArray()
+          .filter(node => node.type === 'text')
+          .map(node => node.nodeValue.trim())
+          .filter(text => text.length > 0)
+          .forEach(text => collection = collection.add(typeof id === 'undefined' ? text: id, text, meta));
       });
 
     return collection;

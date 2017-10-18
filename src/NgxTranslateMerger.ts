@@ -1,13 +1,14 @@
 import * as _ from 'lodash';
-import { merge, readDir, save } from './utils';
+import { readDir, save } from './utils';
 import * as globToRegExp from 'glob-to-regexp'
-import { TranslationCollection } from './biesbjerg-ngx-translate-extract'
+import { CompilerFactory } from './compiler.factory';
+import { ExtendedTranslationCollection } from './ExtendedTranslationCollection ';
+import { CompilerInterface } from './biesbjerg-ngx-translate-extract';
 import * as fs from 'fs';
 import * as path from 'path';
-import { CompilerFactory } from './compiler.factory';
 
 export class NgxTranslateMerger {
-  public translations: { [p: string]: TranslationCollection };
+  public translations: { [p: string]: ExtendedTranslationCollection };
   private _options: NgxTranslateMerger.MergerOptions;
 
   constructor(options: NgxTranslateMerger.MergerOptions = {}) {
@@ -28,7 +29,7 @@ export class NgxTranslateMerger {
 
     this.translations = this._extractTranslationCollections(languagesMap);
     for (const lang of Object.keys(this.translations)) {
-      save(this.translations[lang], lang, o.format, o.output);
+      o.output.forEach(ot => save(this.translations[lang], lang, o.format, ot))
     }
   }
 
@@ -74,7 +75,7 @@ export class NgxTranslateMerger {
     return files;
   }
 
-  private _extractTranslationCollections(translationFiles: { [key: string]: string[] }): { [key: string]: TranslationCollection } {
+  private _extractTranslationCollections(translationFiles: { [key: string]: string[] }): { [key: string]: ExtendedTranslationCollection } {
     const compilers = [
       CompilerFactory.create('pot', {}),
       CompilerFactory.create('json', {})
@@ -84,12 +85,26 @@ export class NgxTranslateMerger {
       const paths = translationFiles[lang];
 
       for (const compiler of compilers) {
-        collections[lang] = merge(paths, compiler)
+        collections[lang] = merge(paths, compiler, collections[lang]);
       }
     }
 
     return collections;
   }
+}
+
+function merge(paths: string[], compiler: CompilerInterface,
+                      collection = new ExtendedTranslationCollection()): ExtendedTranslationCollection {
+  return paths
+    .filter(p => path.extname(p) === `.${compiler.extension}`)
+    .filter(p => fs.existsSync(p))
+    .map(p => fs.readFileSync(p, 'utf-8'))
+    .map(content => {
+      return compiler.parse.bind(compiler)(content);
+    })
+    .reduce((acc: ExtendedTranslationCollection, c: ExtendedTranslationCollection) => {
+      return acc.union(c);
+    }, collection) as ExtendedTranslationCollection;
 }
 
 export namespace NgxTranslateMerger {
