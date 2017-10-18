@@ -21,13 +21,13 @@ export class I18nParser extends AbstractTemplateParser implements ParserInterfac
 
     template = this._normalizeTemplateAttributes(template);
 
-    const selector = '[i18n]';
+    const selector = '[ngx-i18n]';
     $(template)
       .find(selector)
       .addBack(selector)
       .each((i: number, element: CheerioElement) => {
         const $element = $(element);
-        let attr = $element.attr('i18n') || '';
+        let attr = $element.attr('ngx-i18n') || '';
         const pattern = /(?:([^|@]*)\|)?([^|@]*)(?:@@([^|@]*))?/;
         let meta: TranslationMeta = {};
         let meaning, description, id;

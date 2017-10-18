@@ -11,6 +11,7 @@ import { TranslatePoHttpLoader } from '@biesbjerg/ngx-translate-po-http-loader';
 import { Http } from '@angular/http';
 import { ModuleB } from './moduleB/moduleB.module';
 import { ModuleAComponent } from './moduleA.component';
+import { I18nDirective } from './ngx-translate-wrapper/ngx-translate-wrapper.directive';
 
 
 export class MissingTranslationLogger {
@@ -21,7 +22,7 @@ export class MissingTranslationLogger {
 
 @NgModule({
   declarations: [
-    ModuleAComponent
+    ModuleAComponent, I18nDirective
   ],
   imports: [
     BrowserModule, ModuleB,
