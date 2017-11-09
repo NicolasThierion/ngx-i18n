@@ -1,6 +1,13 @@
 <div>
+
+  <!-- ngx-translate -->
   <h1 translate>Module A directive</h1>
+  <h1 translate [translateParams]="{value: 'World'}">hello translate %value</h1>
   <div>{{ 'Module A pipe' | translate }}</div>
+
+  <!-- ngx-i18n -->
   <div ngx-i18n="context|description@@a.i18n.key">Module A i18n</div>
-  <module-b></module-b>
+  <div ngx-i18n="context|description@@a.i18n.key-with-parameters" [translateParams]="{value: 'World'}">hello ngx %value</div>
+
+  <!--<module-b></module-b>-->
 </div>

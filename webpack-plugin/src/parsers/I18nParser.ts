@@ -46,6 +46,7 @@ export class I18nParser extends AbstractTemplateParser implements ParserInterfac
           .filter(node => node.type === 'text')
           .map(node => node.nodeValue.trim())
           .filter(text => text.length > 0)
+          .map(text => text.replace(/%([^\s]*)/g, "{{$1}}"))    // replaces '%value' with '{{value}}'
           .forEach(text => collection = collection.add(typeof id === 'undefined' ? text: id, text, meta));
       });
 

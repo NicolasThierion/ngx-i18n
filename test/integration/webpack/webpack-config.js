@@ -1,4 +1,4 @@
-const TranslatePlugin  = require('ngx-translation-webpack');
+const TranslatePlugin  = require('@ngx-i18n/webpack-plugin');
 const merge = require('webpack-merge');
 module.exports = function (originalConfig, buildOptions) {
   const extractor = new TranslatePlugin.Extractor({

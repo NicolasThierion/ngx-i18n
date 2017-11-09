@@ -4,6 +4,7 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
+    "module": "commonjs",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -12,12 +13,8 @@
       "node_modules/@types"
     ],
     "lib": [
-      "es2017",
+      "es2016",
       "dom"
-    ],
-    "baseUrl": ".",                        /* Base directory to resolve non-absolute module names. */
-    "paths": {                            /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
-      "@angular/*": ["../node_modules/@angular/*"]
-    }
+    ]
   }
 }

@@ -30,7 +30,7 @@ gulp.task('lint', 'Validates code with "eslint"', function (done) {
     .on('finish', done);
 });
 
-gulp.task('watch', function() {
+gulp.task('build:watch', function() {
   return sequence('compile', 'assets', watch);
 });
 

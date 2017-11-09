@@ -1,41 +1,21 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import {
-  TranslateModule, TranslateLoader, MissingTranslationHandler,
-  MissingTranslationHandlerParams
-} from '@ngx-translate/core';
-import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { TranslatePoHttpLoader } from '@biesbjerg/ngx-translate-po-http-loader';
-import { Http } from '@angular/http';
 import { ModuleB } from './moduleB/moduleB.module';
 import { ModuleAComponent } from './moduleA.component';
-import { I18nDirective } from './ngx-translate-wrapper/ngx-translate-wrapper.directive';
+import { I18nModule } from '@ngx-i18n/angular';
 
 
-export class MissingTranslationLogger {
-  handle(params: MissingTranslationHandlerParams): any {
-    console.error(`Missing translation for ${params.key}`);
-  }
-}
 
 @NgModule({
   declarations: [
-    ModuleAComponent, I18nDirective
+    ModuleAComponent
   ],
   imports: [
-    BrowserModule, ModuleB,
+    BrowserModule, /* ModuleB, */
     HttpClientModule,
-    TranslateModule.forRoot({
-      loader: {
-        provide: TranslateLoader,
-        useFactory: HttpLoaderFactory,
-        deps: [HttpClient]
-      },
-      missingTranslationHandler: {provide: MissingTranslationHandler, useClass: MissingTranslationLogger},
-
-    })
+    I18nModule.forRoot('src/assets/i18n/')
   ],
   providers: [],
   bootstrap: [ModuleAComponent]
@@ -43,10 +23,3 @@ export class MissingTranslationLogger {
 export class ModuleA { }
 
 
-export function HttpLoaderFactory(http: HttpClient) {
-  return new TranslateHttpLoader(http, '/assets/i18n/');
-}
-
-export function PoLoaderFactory(http: Http) {
-  return new TranslatePoHttpLoader(http, '/assets/i18n', '.po');
-}
