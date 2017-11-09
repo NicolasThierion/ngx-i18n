@@ -1,6 +1,6 @@
 {
   "name": "ngx-translation-webpack",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A webpack plugin to extract translations into .json & .po files out of HTML/JS sources, using ngx-translate. The extracted translations can be eddited, and then injected back into the bundle.",
   "keywords": [
     "webpack",
