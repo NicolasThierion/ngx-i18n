@@ -1,0 +1,6 @@
+[submodule "ngx-i18n-webpack-plugin"]
+	path = ngx-i18n-webpack-plugin
+	url = https://github.com/NicolasThierion/ngx-i18n-webpack-plugin
+[submodule "ngx-i18n-angular"]
+	path = ngx-i18n-angular
+	url = https://github.com/NicolasThierion/ngx-i18n-angular
