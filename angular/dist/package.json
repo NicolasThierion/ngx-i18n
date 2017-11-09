@@ -1,6 +1,6 @@
 {
   "name": "@ngx-i18n/angular",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "license": "MIT",
   "private": false,
   "dependencies": {
