@@ -3,7 +3,7 @@ import { NgxTranslateExtractor } from '../NgxTranslateExtractor';
 import * as _ from 'lodash';
 import { NgxTranslateMerger } from '../NgxTranslateMerger';
 import { ExtractorPlugin } from './ExtractorPlugin';
-import { InjectorPlugin } from './InjectorPlugin';
+import { MergerPlugin } from './MergerPlugin';
 
 /**
  *
@@ -18,7 +18,9 @@ export namespace TranslatePlugin {
     languages?: string[];     // for which languages should generate files ?
   }
 
-  export interface InjectorOptions extends NgxTranslateMerger.MergerOptions {}
+  export interface MergerOptions extends NgxTranslateMerger.MergerOptions {
+    emitOnly?: boolean;
+  }
 
   /**
    * Offers extraction of translations from HTML & JS, when compiling the sources.
@@ -26,6 +28,7 @@ export namespace TranslatePlugin {
   export class Extractor {
     public html: Plugin;
     public js: Plugin;
+    public ts: Plugin;
 
     constructor(options: ExtractorOptions = {}) {
       this.html = new ExtractorPlugin(new NgxTranslateExtractor(_.merge(options, {
@@ -39,11 +42,19 @@ export namespace TranslatePlugin {
             throw new Error('not implemented')
           });
         }
-      }
+      };
+
+      this.ts = {
+        apply: (compiler: Compiler) => {
+          compiler.plugin('compile', compilation => {
+            // TODO extract translations from TS.
+            throw new Error('not implemented')
+          });
+        }
+      };
     }
   }
 
-  export const Injector = InjectorPlugin;
-
+  export const Merger = MergerPlugin;
 }
 

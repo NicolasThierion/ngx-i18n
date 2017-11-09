@@ -139,4 +139,3 @@ function intersect(path: string, compiler: CompilerInterface,
   res = collection.union(res).intersect(collection);
   return res;
 }
-

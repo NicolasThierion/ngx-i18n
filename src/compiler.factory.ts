@@ -13,5 +13,4 @@ export class CompilerFactory extends NgxCompilerFactory {
 
     return super.create(format, options)
   }
-
 }

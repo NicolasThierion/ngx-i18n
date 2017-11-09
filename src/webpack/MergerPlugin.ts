@@ -1,20 +1,25 @@
 /**
- * Offers injection of any previously extracted translation.
+ * Offers merge & injection of any previously extracted translation.
  */
 import { Compiler } from 'webpack';
 import { NgxTranslateMerger } from '../NgxTranslateMerger';
 import { TranslatePlugin } from './ngx-translation-webpack';
 import * as _ from 'lodash';
 
-export class InjectorPlugin {
+export class MergerPlugin {
   _emit: string[];
   _merger: NgxTranslateMerger;
-  constructor(options?: TranslatePlugin.InjectorOptions) {
-    options = options || {};
+  constructor(options?: TranslatePlugin.MergerOptions) {
+    options = _checkOptions(options);
 
-    // void output, and rather emit to webpack bundle
-    this._emit = _.defaults(options.output, ['assets/i18n/[lang].[ext]']);
-    options.output = [];
+
+    if (options.emitOnly) {
+      // void output, and rather emit to webpack bundle
+      this._emit = options.output as string[];
+      options.output = [];
+    } else {
+      this._emit = [];
+    }
     this._merger = new NgxTranslateMerger(options);
   }
 
@@ -43,4 +48,22 @@ export class InjectorPlugin {
       callback();
     });
   }
+}
+
+
+function _checkOptions(options?: TranslatePlugin.MergerOptions): TranslatePlugin.MergerOptions {
+  options = _.defaults(options || {}, {
+    emitOnly: false,
+    output: ['src/assets/i18n/[lang].[ext]']
+  });
+
+  if (typeof options.emitOnly !== 'boolean') {
+    throw new TypeError('emitOnly should be a boolean');
+  }
+
+  if (!_.isArray(options.output)) {
+    throw new TypeError('output should be an array');
+  }
+
+  return options;
 }

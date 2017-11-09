@@ -7,15 +7,15 @@ module.exports = function (originalConfig, buildOptions) {
     relativeOutput: true
   });
 
-  const injector = new TranslatePlugin.Injector({
-    format: 'json',         // inject translations as json
-    output: []              // no output, only inject into the bundle
+  const merger = new TranslatePlugin.Merger({
+    format: 'json',         // merge translations as json
+    emitOnly: true         // no output, only inject into the bundle
   });
 
   return merge.smart(originalConfig, {
     plugins: [
       extractor.html,       // plug in html extractor
-      injector              // plug in translation injector
+      merger              // plug in translation merger
     ]
   });
 };

@@ -17,7 +17,7 @@ export class NgxTranslateMerger {
     this._options = _.defaults(options, {
       input: ['./src'],
       patterns: [`**/i18n/*.[lang].po`, `**/i18n/*.[lang].json`],
-      output: ['assets/i18n/[lang].[ext]'],
+      output: ['src/assets/i18n/[lang].[ext]'],
       format: 'json'
     });
   }
@@ -29,7 +29,9 @@ export class NgxTranslateMerger {
 
     this.translations = this._extractTranslationCollections(languagesMap);
     for (const lang of Object.keys(this.translations)) {
-      o.output.forEach(ot => save(this.translations[lang], lang, o.format, ot))
+      o.output.forEach(ot => {
+        save(this.translations[lang], lang, o.format, ot);
+      })
     }
   }
 
