@@ -9,13 +9,13 @@ module.exports = function (originalConfig, buildOptions) {
 
   const merger = new TranslatePlugin.Merger({
     format: 'json',         // merge translations as json
-    emitOnly: true         // no output, only inject into the bundle
+    emitOnly: true          // no output, only inject into the bundle
   });
 
   return merge.smart(originalConfig, {
     plugins: [
-      extractor.html,       // plug in html extractor
-      merger              // plug in translation merger
+      extractor,             // plug in extractor
+      merger                // plug in translation merger
     ]
   });
 };
