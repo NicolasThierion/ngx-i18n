@@ -1,4 +1,4 @@
-# @ngx-i18n/webpack-plugin <sub>0.0.5</sub>
+# @ngx-i18n/webpack-plugin <sub>0.0.6</sub>
 
 ## Disclaimer
 > This is my first webpack plugin. This project is a work in progress. It as not been heavily tested.
@@ -73,7 +73,7 @@ msgstr "hello ngx {{value}}"
 ## How to use the plugin
 1. Install the plugin
     ```sh
-    npm install --save-dev https://git@github.com/NicolasThierion/ngx-i18n-webpack-plugin.git#0.0.5
+    npm install --save-dev https://github.com/NicolasThierion/ngx-i18n-webpack-plugin.git#0.0.6
     ```
 2. Enable the plugin into your webpack config
 webpack.config.js:
@@ -112,7 +112,7 @@ Angular cli does not allow webpack config customization, but you may find 2 work
 ## How to use the directive
 1. Install the `ngx-i18n` directive
     ```sh
-    npm install --save https://git@github.com/NicolasThierion/ngx-i18n-angular.git#0.0.5
+    npm install --save https://github.com/NicolasThierion/ngx-i18n-angular.git#0.0.6
     ```
 
 2. Register the module at your root module
@@ -155,6 +155,8 @@ The project comes with its build toolchain based on gulp.
 -
 
 ### CHANGELOG:
+ -  0.0.6
+    - bugfixes
  -  0.0.5
     - basic support for translate service & TS parser.
  -  0.0.4
