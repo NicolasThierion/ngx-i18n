@@ -1,4 +1,5 @@
-# @ngx-i18n/webpack-plugin <sub>0.0.6</sub>
+# @ngx-i18n/webpack-plugin <sub>0.0.7</sub>
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
 
 ## Disclaimer
 > This is my first webpack plugin. This project is a work in progress. It as not been heavily tested.
@@ -112,7 +113,7 @@ Angular cli does not allow webpack config customization, but you may find 2 work
 ## How to use the directive
 1. Install the `ngx-i18n` directive
     ```sh
-    npm install --save https://github.com/NicolasThierion/ngx-i18n-angular.git#0.0.6
+    npm install --save https://github.com/NicolasThierion/ngx-i18n-angular.git#0.0.7
     ```
 
 2. Register the module at your root module
@@ -123,7 +124,9 @@ import { I18nModule } from '@ngx-i18n/angular';
 
 @NgModule({
   imports: [
-    I18nModule.forRoot('src/assets/i18n/')    // register I18n module, with pre-configures http json loader binded to this path
+    HttpClientModule,                         // I18nModule is configured to work with a preconfigured Http Loader, which rely on this.
+    TranslateModule.forRoot(),                // I18nModule requires TranslateModule to be loaded globally.
+    I18nModule.forRoot('src/assets/i18n/')    // register I18n module, specifying path to translations.
   ]
 })
 export class AppModule { }
@@ -136,7 +139,7 @@ import { I18nModule } from '@ngx-i18n/angular';
 
 @NgModule({
   imports: [
-    I18nModule
+    I18nModule.forChild()                   // as TranslateModule, forChild is needed for async modules
   ]
 })
 export class LazyModule { }
